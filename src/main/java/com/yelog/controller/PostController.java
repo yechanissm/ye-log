@@ -2,6 +2,7 @@ package com.yelog.controller;
 
 import com.yelog.domain.Post;
 import com.yelog.request.PostCreate;
+import com.yelog.request.PostEdit;
 import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import com.yelog.service.PostService;
@@ -51,5 +52,10 @@ public class PostController {
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
+    }
+
+    @PatchMapping("/posts/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        return postService.edit(postId, request);
     }
 }

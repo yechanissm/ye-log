@@ -3,6 +3,7 @@ package com.yelog.service;
 import com.yelog.domain.Post;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
+import com.yelog.request.PostEdit;
 import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,4 +107,56 @@ class PostServiceTest {
         assertThat(posts.size()).isEqualTo(10);
         assertThat(posts.get(0).getTitle()).isEqualTo("예차니즘 제목  19");
     }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void test4() {
+        //given
+        Post post = Post.builder()
+                .title("예차니즘")
+                .content("삼환아파트")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("예찬맨")
+                .build();
+
+        //when
+        postService.edit(post.getId(), postEdit);
+
+        //then
+        Post changePost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다 id" + post.getId()));
+        assertThat(changePost.getTitle()).isEqualTo("예찬맨");
+    }
+
+    @Test
+    @DisplayName("글 내용 수정")
+    void test5() {
+        //given
+        Post post = Post.builder()
+                .title("예차니즘")
+                .content("우성아파트")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("예차니즘")
+                .content("삼환아파트")
+                .build();
+
+        //when
+        postService.edit(post.getId(), postEdit);
+
+        //then
+        Post changePost = postRepository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다 id" + post.getId()));
+        assertThat(changePost.getContent()).isEqualTo("삼환아파트");
+    }
+
+
+
+
 }
