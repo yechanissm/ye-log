@@ -2,6 +2,7 @@ package com.yelog.service;
 
 import com.yelog.domain.Post;
 import com.yelog.domain.PostEditor;
+import com.yelog.exception.PostNotFound;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
 import com.yelog.request.PostEdit;
@@ -33,7 +34,7 @@ public class PostService {
 
     public PostResponse get(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new PostNotFound());
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -55,7 +56,7 @@ public class PostService {
     @Transactional
     public void edit(Long id, PostEdit postEdit) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(() -> new PostNotFound());
 
         PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
 
@@ -64,6 +65,13 @@ public class PostService {
                 .build();
 
         post.edit(postEditor);
+    }
 
+    public void delete(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFound());
+
+        // -> 존재하는 경우
+        postRepository.delete(post);
     }
 }

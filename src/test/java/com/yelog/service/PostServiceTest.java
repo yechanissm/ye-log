@@ -1,6 +1,7 @@
 package com.yelog.service;
 
 import com.yelog.domain.Post;
+import com.yelog.exception.PostNotFound;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
 import com.yelog.request.PostEdit;
@@ -21,6 +22,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.data.domain.Sort.Direction.*;
 
 @SpringBootTest
@@ -59,7 +61,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("글 1개 조회")
-    void test2() {
+    void test2_1() {
         //given
         Post requestPost = Post.builder()
                 .title("foo")
@@ -78,6 +80,22 @@ class PostServiceTest {
         assertNotNull(response);
         assertThat(response.getTitle()).isEqualTo("foo");
         assertThat(response.getContent()).isEqualTo("bar");
+    }
+
+    @Test
+    @DisplayName("글 1개 조회")
+    void test2_2() {
+        //given
+        Post post = Post.builder()
+                .title("예찬맨")
+                .content("삼환아파트")
+                .build();
+        postRepository.save(post);
+
+        //when & then
+        assertThrows(PostNotFound.class, () -> {
+            postService.get(post.getId() + 1L);
+        });
     }
 
     @Test
@@ -156,7 +174,63 @@ class PostServiceTest {
         assertThat(changePost.getContent()).isEqualTo("삼환아파트");
     }
 
+    @Test
+    @DisplayName("게시글 삭제")
+    void test6() {
+        //given
+        Post post = Post.builder()
+                .title("예차니즘")
+                .content("우성아파트")
+                .build();
+        postRepository.save(post);
 
+        //when
+        postService.delete(post.getId());
+        postService.delete(post.getId());
+
+        //then
+        assertThat(postRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 글")
+    void test7() {
+        //given
+        Post post = Post.builder()
+                .title("예차니즘")
+                .content("우성아파트")
+                .build();
+        postRepository.save(post);
+
+        //when
+        postService.delete(post.getId());
+
+        //then
+        assertThrows(PostNotFound.class, () -> {
+            postService.get(post.getId() + 1L);
+        });
+    }
+
+    @Test
+    @DisplayName("글 내용 수정 - 존재하지 않는 글")
+    void test8() {
+        //given
+        Post post = Post.builder()
+                .title("예차니즘")
+                .content("우성아파트")
+                .build();
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("예차니즘")
+                .content("삼환아파트")
+                .build();
+
+        //then
+        assertThrows(PostNotFound.class, () -> {
+            postService.edit(post.getId() + 1L, postEdit);
+        });
+    }
 
 
 }
