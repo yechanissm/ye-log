@@ -3,6 +3,7 @@ package com.yelog.service;
 import com.yelog.domain.Post;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
+import com.yelog.response.PostResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,13 +58,17 @@ class PostServiceTest {
                 .build();
         postRepository.save(requestPost);
 
+        //클라이언트 요구사항
+        //json 응답에서 title 길이를 최대 10글자로 해주세요.
+        // -> PostResponse 클래스 확인
+
         //when
-        Post findPost = postService.get(requestPost.getId());
+        PostResponse response = postService.get(requestPost.getId());
 
         //then
-        assertNotNull(findPost);
-        assertThat(findPost.getTitle()).isEqualTo("foo");
-        assertThat(findPost.getContent()).isEqualTo("bar");
+        assertNotNull(response);
+        assertThat(response.getTitle()).isEqualTo("foo");
+        assertThat(response.getContent()).isEqualTo("bar");
     }
 
 

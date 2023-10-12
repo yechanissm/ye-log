@@ -2,6 +2,7 @@ package com.yelog.controller;
 
 import com.yelog.domain.Post;
 import com.yelog.request.PostCreate;
+import com.yelog.response.PostResponse;
 import com.yelog.service.PostService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,12 @@ public class PostController {
      * /posts/{postId} -> 글 한개만 조회
      */
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable(name = "postId") Long id) {
-        return postService.get(id);
+    public PostResponse get(@PathVariable(name = "postId") Long id) {
+        //응답 클래스 분리 (서비스 정책에 맞는)
+        // Request 클래스 -> 요청에 대한 정책을 담아둔 클래스
+        // Response 클래스 -> 서비스 정책에 맞는 로직이 들어가는 클래스
+
+        PostResponse response = postService.get(id);
+        return response;
     }
 }
