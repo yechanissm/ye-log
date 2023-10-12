@@ -1,19 +1,17 @@
 package com.yelog.request;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
+@Setter
 @ToString
+@Getter
 public class PostCreate {
 
-    public String title;
+    private String title;
 
-    public String content;
+    private String content;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

@@ -35,4 +35,19 @@ class PostControllerTest {
         //프린트 메소드는 HTTP 요청에 대한 요약을 남겨준다
     }
 
+
+    @Test
+    @DisplayName("/post 요청시 TITLE 값은 필수다")
+    void test2() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"\", \"content\":\"내용입니다.\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello World"))
+                .andDo(MockMvcResultHandlers.print());
+        //프린트 메소드는 HTTP 요청에 대한 요약을 남겨준다
+    }
+
 }
