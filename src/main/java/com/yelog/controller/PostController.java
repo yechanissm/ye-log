@@ -3,17 +3,13 @@ package com.yelog.controller;
 import com.yelog.domain.Post;
 import com.yelog.request.PostCreate;
 import com.yelog.service.PostService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,5 +28,14 @@ public class PostController {
         //          -> 서버에서 차라리 유연하게 대응하는게 좋다.
         //현재 코드는 Case3
         postService.write(request);
+    }
+
+    /**
+     * /posts -> 글 전체조회(검색 + 페이징)
+     * /posts/{postId} -> 글 한개만 조회
+     */
+    @GetMapping("/posts/{postId}")
+    public Post get(@PathVariable(name = "postId") Long id) {
+        return postService.get(id);
     }
 }
