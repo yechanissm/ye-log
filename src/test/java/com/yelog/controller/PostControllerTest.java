@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -136,7 +135,7 @@ class PostControllerTest {
     @DisplayName("글 여러 조회")
     void test5() throws Exception {
         //given
-        List<Post> requestPosts = IntStream.range(1,31)
+        List<Post> requestPosts = IntStream.range(0,20)
                 .mapToObj(i -> Post.builder()
                         .title("예차니즘 제목  " + i)
                         .content("삼환아파트  " + i)
@@ -150,7 +149,7 @@ class PostControllerTest {
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()", Matchers.is(10)))
-                .andExpect(jsonPath("$[0].id").value(30))
+                .andExpect(jsonPath("$[0].title").value("예차니즘 제목  19"))
                 .andDo(print());
 
     }
