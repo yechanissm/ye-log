@@ -4,16 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yelog.domain.Post;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
-import org.junit.jupiter.api.*;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.http.MediaType.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
@@ -44,7 +48,7 @@ class PostControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
@@ -64,7 +68,7 @@ class PostControllerTest {
 
         String json = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
@@ -88,7 +92,7 @@ class PostControllerTest {
         String json = objectMapper.writeValueAsString(request);
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(post("/posts")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
@@ -114,11 +118,40 @@ class PostControllerTest {
         postRepository.save(post);
 
         //when & then
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", post.getId())
+        mockMvc.perform(get("/posts/{postId}", post.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(post.getId()))
                 .andExpect(jsonPath("$.title").value("0123456789"))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("글 여러 조회")
+    void test5() throws Exception {
+        //given
+        Post post1 = postRepository.save(Post.builder()
+                .title("title1")
+                .content("content1")
+                .build());
+        Post post2 = postRepository.save(Post.builder()
+                .title("title2")
+                .content("content2")
+                .build());
+        /**
+         * [
+         * {id: ..., title : ...},
+         *  {id:..., title : ...}
+         * ]
+         */
+        //when & then
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$[1].content").value("content2"))
                 .andDo(print());
 
     }

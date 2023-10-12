@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,12 +37,16 @@ public class PostController {
      * /posts/{postId} -> 글 한개만 조회
      */
     @GetMapping("/posts/{postId}")
-    public PostResponse get(@PathVariable(name = "postId") Long id) {
+    public PostResponse get(@PathVariable Long postId) {
         //응답 클래스 분리 (서비스 정책에 맞는)
         // Request 클래스 -> 요청에 대한 정책을 담아둔 클래스
         // Response 클래스 -> 서비스 정책에 맞는 로직이 들어가는 클래스
 
-        PostResponse response = postService.get(id);
-        return response;
+        return postService.get(postId);
+    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> getList() {
+        return postService.getList();
     }
 }

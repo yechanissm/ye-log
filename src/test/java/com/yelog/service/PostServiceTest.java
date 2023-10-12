@@ -4,15 +4,16 @@ import com.yelog.domain.Post;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
 import com.yelog.response.PostResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class PostServiceTest {
@@ -71,5 +72,25 @@ class PostServiceTest {
         assertThat(response.getContent()).isEqualTo("bar");
     }
 
+    @Test
+    @DisplayName("글 여러 조회")
+    void test3() {
+        //given
+        postRepository.saveAll(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("bar1")
+                        .build(),
+                Post.builder()
+                        .title("foo2")
+                        .content("bar2")
+                        .build()
+        ));
 
+        //when
+        List<PostResponse> posts = postService.getList();
+
+        //then
+        assertThat(posts.size()).isEqualTo(2);
+    }
 }
