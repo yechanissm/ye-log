@@ -13,6 +13,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -131,27 +136,21 @@ class PostControllerTest {
     @DisplayName("글 여러 조회")
     void test5() throws Exception {
         //given
-        Post post1 = postRepository.save(Post.builder()
-                .title("title1")
-                .content("content1")
-                .build());
-        Post post2 = postRepository.save(Post.builder()
-                .title("title2")
-                .content("content2")
-                .build());
-        /**
-         * [
-         * {id: ..., title : ...},
-         *  {id:..., title : ...}
-         * ]
-         */
+        List<Post> requestPosts = IntStream.range(1,31)
+                .mapToObj(i -> Post.builder()
+                        .title("예차니즘 제목  " + i)
+                        .content("삼환아파트  " + i)
+                        .build())
+                .collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
         //when & then
-        mockMvc.perform(get("/posts")
+        mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", Matchers.is(2)))
-                .andExpect(jsonPath("$[0].id").value(post1.getId()))
-                .andExpect(jsonPath("$[1].content").value("content2"))
+                .andExpect(jsonPath("$.length()", Matchers.is(5)))
+                .andExpect(jsonPath("$[0].id").value(30))
                 .andDo(print());
 
     }

@@ -6,6 +6,9 @@ import com.yelog.request.PostCreate;
 import com.yelog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,8 +41,12 @@ public class PostService {
                 .build();
     }
 
-    public List<PostResponse> getList() {
-        return postRepository.findAll().stream()
+    // 글이 너무 많은 경우 -> 비용이 많이 든다
+    // 글이 -> 100,000,000 -> 모두 조회할 경우 -> DB가 뻗는다
+    // DB -> 애플리케이션 서버로 전달하는 시간, 트래픽비용이 많이 든다.
+    public List<PostResponse> getList(Pageable pageable) {
+
+        return postRepository.findAll(pageable).stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());
     }
