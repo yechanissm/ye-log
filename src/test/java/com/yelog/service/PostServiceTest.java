@@ -143,7 +143,7 @@ class PostServiceTest {
         postRepository.save(post);
 
         PostEdit postEdit = PostEdit.builder()
-                .title("예차니즘")
+                .title(null)
                 .content("삼환아파트")
                 .build();
 
