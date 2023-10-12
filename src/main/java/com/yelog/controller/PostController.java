@@ -2,6 +2,7 @@ package com.yelog.controller;
 
 import com.yelog.domain.Post;
 import com.yelog.request.PostCreate;
+import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import com.yelog.service.PostService;
 import lombok.Getter;
@@ -48,7 +49,7 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public List<PostResponse> getList(Pageable pageable) {
-        return postService.getList(pageable);
+    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
+        return postService.getList(postSearch);
     }
 }

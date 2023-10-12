@@ -3,6 +3,7 @@ package com.yelog.service;
 import com.yelog.domain.Post;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
+import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -82,7 +83,7 @@ class PostServiceTest {
     @DisplayName("글 1페이지 조회")
     void test3() {
         //given
-        List<Post> requestPosts = IntStream.range(1,31)
+        List<Post> requestPosts = IntStream.range(0, 20)
                         .mapToObj(i -> Post.builder()
                                 .title("예차니즘 제목  " + i)
                                 .content("삼환아파트  " + i)
@@ -92,14 +93,17 @@ class PostServiceTest {
         postRepository.saveAll(requestPosts);
 
         // sql -> select, limit, offset
-        Pageable pageable = PageRequest.of(0,5, DESC, "id");
+        Pageable pageable = PageRequest.of(0,5);
+
+        PostSearch postSearch = PostSearch.builder()
+                .page(1).build();
+
 
         //when
-        List<PostResponse> posts = postService.getList(pageable);
+        List<PostResponse> posts = postService.getList(postSearch);
 
         //then
-        assertThat(posts.size()).isEqualTo(5);
-        assertThat(posts.get(0).getTitle()).isEqualTo("예차니즘 제목  30");
-        assertThat(posts.get(4).getTitle()).isEqualTo("예차니즘 제목  26");
+        assertThat(posts.size()).isEqualTo(10);
+        assertThat(posts.get(0).getTitle()).isEqualTo("예차니즘 제목  19");
     }
 }

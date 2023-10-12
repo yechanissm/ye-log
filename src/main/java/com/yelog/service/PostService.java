@@ -3,6 +3,7 @@ package com.yelog.service;
 import com.yelog.domain.Post;
 import com.yelog.repository.PostRepository;
 import com.yelog.request.PostCreate;
+import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +45,9 @@ public class PostService {
     // 글이 너무 많은 경우 -> 비용이 많이 든다
     // 글이 -> 100,000,000 -> 모두 조회할 경우 -> DB가 뻗는다
     // DB -> 애플리케이션 서버로 전달하는 시간, 트래픽비용이 많이 든다.
-    public List<PostResponse> getList(Pageable pageable) {
+    public List<PostResponse> getList(PostSearch postSearch) {
 
-        return postRepository.findAll(pageable).stream()
+        return postRepository.getList(postSearch).stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());
     }
