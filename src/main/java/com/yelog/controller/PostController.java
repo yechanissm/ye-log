@@ -1,6 +1,7 @@
 package com.yelog.controller;
 
 import com.yelog.domain.Post;
+import com.yelog.exception.InvalidRequest;
 import com.yelog.request.PostCreate;
 import com.yelog.request.PostEdit;
 import com.yelog.request.PostSearch;
@@ -33,6 +34,7 @@ public class PostController {
         // Bad Case : 서버에서 -> 반드시 이렇게 합니다.! Fix XXXXX
         //          -> 서버에서 차라리 유연하게 대응하는게 좋다.
         //현재 코드는 Case3
+        request.validate();
         postService.write(request);
     }
 
@@ -45,7 +47,6 @@ public class PostController {
         //응답 클래스 분리 (서비스 정책에 맞는)
         // Request 클래스 -> 요청에 대한 정책을 담아둔 클래스
         // Response 클래스 -> 서비스 정책에 맞는 로직이 들어가는 클래스
-
         return postService.get(postId);
     }
 

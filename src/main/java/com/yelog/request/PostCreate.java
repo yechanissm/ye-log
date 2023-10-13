@@ -1,5 +1,6 @@
 package com.yelog.request;
 
+import com.yelog.exception.InvalidRequest;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Getter
 @Setter
+@NoArgsConstructor
 public class PostCreate {
 
     @NotBlank(message = "타이틀을 입력해주세요.")
@@ -26,4 +28,9 @@ public class PostCreate {
         this.content = content;
     }
 
+    public void validate() {
+        if( title.contains("바보")) {
+            throw new InvalidRequest("title", "제목에 바보를 포함할 수 없습니다.");
+        }
+    }
 }

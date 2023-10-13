@@ -186,7 +186,6 @@ class PostServiceTest {
 
         //when
         postService.delete(post.getId());
-        postService.delete(post.getId());
 
         //then
         assertThat(postRepository.count()).isEqualTo(0);
