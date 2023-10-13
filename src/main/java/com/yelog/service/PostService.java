@@ -30,7 +30,7 @@ public class PostService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .build();
-
+        System.out.println("하하");
         postRepository.save(post).getId();
     }
 
