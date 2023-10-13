@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
+import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -58,7 +59,7 @@ public class PostControllerDocTest {
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("index",
+                .andDo(document("post-inquiry",
                         //요청에 대한 설명
                         pathParameters(
                                 parameterWithName("postId").description("게시글 ID")
@@ -90,10 +91,11 @@ public class PostControllerDocTest {
                         .content(json))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("index",
+                .andDo(document("post-create",
                         PayloadDocumentation.requestFields(
-                                PayloadDocumentation.fieldWithPath("title").description("제목"),
-                                PayloadDocumentation.fieldWithPath("content").description("내용")
+                                PayloadDocumentation.fieldWithPath("title").description("제목")
+                                        .attributes(Attributes.key("constraint").value("좋은 제목 입력해주세요")),
+                                PayloadDocumentation.fieldWithPath("content").description("내용").optional()
                         )
                 ));
     }
