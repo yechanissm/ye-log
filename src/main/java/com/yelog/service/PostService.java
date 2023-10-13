@@ -10,6 +10,7 @@ import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nonapi.io.github.classgraph.json.JSONUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class PostService {
     // 글이 -> 100,000,000 -> 모두 조회할 경우 -> DB가 뻗는다
     // DB -> 애플리케이션 서버로 전달하는 시간, 트래픽비용이 많이 든다.
     public List<PostResponse> getList(PostSearch postSearch) {
+        System.out.println("dsadsa");
 
         return postRepository.getList(postSearch).stream()
                 .map(post -> new PostResponse(post))
