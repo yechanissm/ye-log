@@ -25,6 +25,16 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/test")
+    public String test() {
+        return "hello";
+    }
+
+    @GetMapping("/foo")
+    public String foo() {
+        return "foo";
+    }
+
     @PostMapping("/posts")
     public void post(@RequestBody @Valid PostCreate request, @RequestHeader String authorization) throws Exception {
         //Case1. 저장한 데이터 Entity -> Response로 응답하기
