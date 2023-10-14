@@ -62,12 +62,16 @@ public class PostController {
     }
 
     @PatchMapping("/posts/{postId}")
-    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
-        postService.edit(postId, request);
+    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request , @RequestHeader String authorization) {
+        if(authorization.equals("yechan")){
+            postService.edit(postId, request);
+        }
     }
 
     @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable Long postId) {
-        postService.delete(postId);
+    public void delete(@PathVariable Long postId, @RequestHeader String authorization) {
+       if(authorization.equals("yechan")){
+           postService.delete(postId);
+       }
     }
 }
