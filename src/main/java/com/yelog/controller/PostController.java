@@ -28,9 +28,9 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/foo")
-    public Long foo(UserSession uerSession) {
-        log.info(">>> {}" , uerSession.id);
-        return uerSession.id;
+    public Long foo(UserSession userSession) {
+        log.info(">>> {}" , userSession.id);
+        return userSession.id;
     }
 
     @GetMapping("/bar")
