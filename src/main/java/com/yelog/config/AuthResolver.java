@@ -21,13 +21,13 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
     //넘어온 DTO 값 세팅
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        String accessToken = webRequest.getParameter("accessToken");
+        String accessToken = webRequest.getHeader("Authorization");
         if (accessToken ==null || accessToken.equals("")) {
             throw new Unauthorized();
         }
+        // 데이터 베이스 사용자 확인 작업
 
-        UserSession userSession = new UserSession();
-        userSession.name = accessToken;
-        return userSession;
+        return new UserSession(1L);
+
     }
 }
