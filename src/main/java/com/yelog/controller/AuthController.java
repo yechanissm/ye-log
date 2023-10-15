@@ -1,49 +1,39 @@
 package com.yelog.controller;
 
-import com.yelog.domain.User;
-import com.yelog.exception.InvalidRequest;
-import com.yelog.exception.InvalidSigninInformation;
-import com.yelog.repository.UserRepository;
 import com.yelog.request.Login;
 import com.yelog.response.SessionResponse;
 import com.yelog.service.AuthService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
-import java.util.Optional;
+import javax.crypto.SecretKey;
+import java.util.Base64;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final static String KEY = "4+rwsQ2gJvu0yrkdJnwftn9o30Das9vy4XpI9+t2G3M=";
+
     private final AuthService authService;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<Object> login(@RequestBody Login login)  {
+    public SessionResponse login(@RequestBody Login login) {
         // DB 접근 & 토큰 발근
-        String accessToken = authService.signin(login);
-        ResponseCookie cookie = ResponseCookie.from("SESSION", accessToken)
-                .domain("localhost")
-                .path("/")
-                .httpOnly(true)
-                .secure(false)
-                .maxAge(Duration.ofDays(30))
-                .sameSite("Strict")
-                .build();
+        Long userId = authService.signin(login);
 
-        log.info(">>>>> cookie = {}", cookie.toString());
+        SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
 
-        return  ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+        String jws = Jwts.builder().setSubject(String.valueOf(userId)).signWith(key).compact();
+
+        return new SessionResponse(jws);
     }
 
 

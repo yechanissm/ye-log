@@ -1,6 +1,10 @@
 package com.yelog.config;
 
 import com.yelog.config.data.UserSession;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import com.yelog.domain.Session;
 import com.yelog.exception.Unauthorized;
 import com.yelog.repository.SessionRepository;
@@ -12,15 +16,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
+import java.util.Base64;
 
 @Slf4j
 @RequiredArgsConstructor
 public class AuthResolver implements HandlerMethodArgumentResolver {
 
     private final SessionRepository sessionRepository;
+    private final static String KEY = "4+rwsQ2gJvu0yrkdJnwftn9o30Das9vy4XpI9+t2G3M=";
+
 
     //supprotsParameter -> resolveArgument
     //컨트롤러에서 온 요청이 내가 원하는 DTO 인지 확인
@@ -33,24 +37,23 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
     //넘어온 DTO 값 세팅
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (servletRequest == null) {
-            log.error("serveletRequest null");
-            throw  new Unauthorized();
-        }
-        Cookie[] cookies = servletRequest.getCookies();
-
-        if (cookies.length ==0) {
-            log.error("쿠키가 없음");
+        String jws = webRequest.getHeader("Authorization");
+        if (jws ==null || jws.equals("")) {
             throw new Unauthorized();
         }
-        String accessToken = cookies[0].getValue();
 
-        // 값이 있을 경우, 데이터 베이스 사용자 확인 작업
-        Session session = sessionRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new Unauthorized());
+        byte[] decodedKEy = Base64.getDecoder().decode(KEY);
 
-        return new UserSession(session.getUser().getId());
-
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(decodedKEy)
+                    .build()
+                    .parseClaimsJws(jws);
+            String userId = claims.getBody().getSubject();
+            return new UserSession(Long.parseLong(userId));
+            //OK, we can trust this JWT
+        } catch (JwtException e) {
+            throw  new Unauthorized();
+        }
+        //return new UserSession(session.getUser().getId());
     }
 }
