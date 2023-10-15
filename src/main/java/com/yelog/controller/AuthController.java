@@ -1,5 +1,6 @@
 package com.yelog.controller;
 
+import com.yelog.config.AppConfig;
 import com.yelog.request.Login;
 import com.yelog.response.SessionResponse;
 import com.yelog.service.AuthService;
@@ -14,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
+import java.util.Date;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final static String KEY = "4+rwsQ2gJvu0yrkdJnwftn9o30Das9vy4XpI9+t2G3M=";
-
+    private final AppConfig appConfig;
     private final AuthService authService;
 
     @PostMapping("/auth/login")
@@ -29,9 +30,9 @@ public class AuthController {
         // DB 접근 & 토큰 발근
         Long userId = authService.signin(login);
 
-        SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+        SecretKey key = Keys.hmacShaKeyFor(appConfig.getJwtKey());
 
-        String jws = Jwts.builder().setSubject(String.valueOf(userId)).signWith(key).compact();
+        String jws = Jwts.builder().setSubject(String.valueOf(userId)).signWith(key).setIssuedAt(new Date()).compact();
 
         return new SessionResponse(jws);
     }

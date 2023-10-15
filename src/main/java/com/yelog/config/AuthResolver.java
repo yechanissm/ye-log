@@ -5,7 +5,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import com.yelog.domain.Session;
 import com.yelog.exception.Unauthorized;
 import com.yelog.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,7 @@ import java.util.Base64;
 public class AuthResolver implements HandlerMethodArgumentResolver {
 
     private final SessionRepository sessionRepository;
-    private final static String KEY = "4+rwsQ2gJvu0yrkdJnwftn9o30Das9vy4XpI9+t2G3M=";
-
+    private final AppConfig appConfig;
 
     //supprotsParameter -> resolveArgument
     //컨트롤러에서 온 요청이 내가 원하는 DTO 인지 확인
@@ -42,10 +40,8 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
             throw new Unauthorized();
         }
 
-        byte[] decodedKEy = Base64.getDecoder().decode(KEY);
-
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(decodedKEy)
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(appConfig.getJwtKey())
                     .build()
                     .parseClaimsJws(jws);
             String userId = claims.getBody().getSubject();
