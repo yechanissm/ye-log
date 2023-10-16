@@ -6,6 +6,7 @@ import com.yelog.domain.User;
 import com.yelog.repository.SessionRepository;
 import com.yelog.repository.UserRepository;
 import com.yelog.request.Login;
+import com.yelog.request.SignUp;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -180,6 +181,24 @@ class AuthControllerTest {
                         .header("Authorization", session.getAccessToken() + "-")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입")
+    void test6() throws Exception {
+        //given
+        SignUp signUp = SignUp.builder()
+                .email("dldpcks34@naver.com")
+                .password("1234")
+                .name("이예찬")
+                .build();
+
+        //then
+        mockMvc.perform(post("/auth/signup")
+                        .content(objectMapper.writeValueAsString(signUp))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 

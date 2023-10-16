@@ -19,8 +19,6 @@ spring:
   jpa:
     defer-datasource-initialization: true
 
-  sql:
-    init-model: always
 
 yelog:
   jwt-key: "4+rwsQ2gJvu0yrkdJnwftn9o30Das9vy4XpI9+t2G3M="

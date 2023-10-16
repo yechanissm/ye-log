@@ -2,6 +2,7 @@ package com.yelog.controller;
 
 import com.yelog.config.AppConfig;
 import com.yelog.request.Login;
+import com.yelog.request.SignUp;
 import com.yelog.response.SessionResponse;
 import com.yelog.service.AuthService;
 import io.jsonwebtoken.Jwts;
@@ -35,6 +36,11 @@ public class AuthController {
         String jws = Jwts.builder().setSubject(String.valueOf(userId)).signWith(key).setIssuedAt(new Date()).compact();
 
         return new SessionResponse(jws);
+    }
+
+    @PostMapping("/auth/signup")
+    public void signUp(@RequestBody SignUp signUp) {
+        authService.signUp(signUp);
     }
 
 

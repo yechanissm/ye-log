@@ -1,1 +1,0 @@
-INSERT INTO users (name, email, password, created_At) VALUES ('이예찬', 'dldpcks34@naver.com', '1234', '2023-10-15 12:00:00');
