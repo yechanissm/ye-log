@@ -3,7 +3,7 @@ package com.yelog.request;
 import com.yelog.exception.InvalidRequest;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 
 @ToString

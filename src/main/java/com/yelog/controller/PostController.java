@@ -8,6 +8,7 @@ import com.yelog.request.PostSearch;
 import com.yelog.response.PostResponse;
 import com.yelog.service.PostService;
 import lombok.Getter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -28,7 +27,7 @@ public class PostController {
 
 
     @PostMapping("/posts")
-    public void post(@RequestBody @Valid PostCreate request, @RequestHeader String authorization) throws Exception {
+    public void post(@RequestBody @Valid PostCreate request) throws Exception {
         //Case1. 저장한 데이터 Entity -> Response로 응답하기
         //Case2. 저장한 데이터의 Primary_id -> response로 응답하기
         //          Client에서는 수신 id를 post 조회 API를 통해 데이터를 수신받음
@@ -40,10 +39,8 @@ public class PostController {
         // 인증 방법
         // 1. Get Parameter
         // 2. Header
-        if(authorization.equals("yechan")) {
-            request.validate();
-            postService.write(request);
-        }
+        request.validate();
+        postService.write(request);
     }
 
     /**
@@ -64,16 +61,12 @@ public class PostController {
     }
 
     @PatchMapping("/posts/{postId}")
-    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request , @RequestHeader String authorization) {
-        if(authorization.equals("yechan")){
-            postService.edit(postId, request);
-        }
+    public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        postService.edit(postId, request);
     }
 
     @DeleteMapping("/posts/{postId}")
-    public void delete(@PathVariable Long postId, @RequestHeader String authorization) {
-       if(authorization.equals("yechan")){
-           postService.delete(postId);
-       }
+    public void delete(@PathVariable Long postId) {
+       postService.delete(postId);
     }
 }
