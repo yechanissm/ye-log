@@ -1,8 +1,11 @@
 package com.yelog.service;
 
+import com.yelog.crypto.PasswordEncoder;
 import com.yelog.domain.User;
 import com.yelog.exception.AlreadyExistsEmailException;
+import com.yelog.exception.InvalidSigninInformation;
 import com.yelog.repository.UserRepository;
+import com.yelog.request.Login;
 import com.yelog.request.SignUp;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -72,6 +75,52 @@ class AuthServiceTest {
         //when & then
         assertThrows(AlreadyExistsEmailException.class, () ->
                 authService.signUp(signUp));
+    }
+
+    @Test
+    @DisplayName("로그인 성공")
+    void test3() {
+        PasswordEncoder encoder = new PasswordEncoder();
+        String encrpytedPassword = encoder.encrpyt("1234");
+        //given
+        User user = User.builder()
+                .email("dldpcks34@naver.com")
+                .password(encrpytedPassword)
+                .name("김예찬")
+                .build();
+        userRepository.save(user);
+
+        Login login = Login.builder()
+                .email("dldpcks34@naver.com")
+                .password("1234")
+                .build();
+
+        Long userId = authService.signin(login);
+
+        //when & then
+        assertThat(userId).isNotNull();
+    }
+
+    @Test
+    @DisplayName("로그인 비밀번호 틀림")
+    void test4() {
+        //given
+        PasswordEncoder encoder = new PasswordEncoder();
+        String encrpytedPassword = encoder.encrpyt("1234");
+        //given
+        User user = User.builder()
+                .email("dldpcks34@naver.com")
+                .password(encrpytedPassword)
+                .name("김예찬")
+                .build();
+        userRepository.save(user);
+
+        Login login = Login.builder()
+                .email("dldpcks34@naver.com")
+                .password("5678")
+                .build();
+
+        assertThrows(InvalidSigninInformation.class, ()->authService.signin(login));
     }
 
 }
