@@ -1,6 +1,7 @@
 package com.yelog.service;
 
 import com.yelog.crypto.PasswordEncoder;
+import com.yelog.crypto.ScryptPasswordEncoder;
 import com.yelog.domain.User;
 import com.yelog.exception.AlreadyExistsEmailException;
 import com.yelog.exception.InvalidSigninInformation;
@@ -8,7 +9,6 @@ import com.yelog.repository.UserRepository;
 import com.yelog.request.Login;
 import com.yelog.request.SignUp;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +19,7 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
 
     @Transactional
     public Long signin(Login login) {
@@ -30,7 +31,6 @@ public class AuthService {
         User user = userRepository.findByEmail(login.getEmail())
                 .orElseThrow(() -> new InvalidSigninInformation());
 
-        PasswordEncoder encoder = new PasswordEncoder();
         boolean matches = encoder.matches(login.getPassword(), user.getPassword());
         if(!matches) {
             throw  new InvalidSigninInformation();
@@ -45,9 +45,8 @@ public class AuthService {
             throw new AlreadyExistsEmailException();
         }
 
-        PasswordEncoder encoder = new PasswordEncoder();
 
-        String encodedPassword = encoder.encrpyt(signUp.getPassword());
+        String encodedPassword = encoder.encrypt(signUp.getPassword());
 
         User user = User.builder()
                 .name(signUp.getName())
