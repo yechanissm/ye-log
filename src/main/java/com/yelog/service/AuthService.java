@@ -9,6 +9,7 @@ import com.yelog.repository.UserRepository;
 import com.yelog.request.Login;
 import com.yelog.request.SignUp;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,9 +37,12 @@ public class AuthService {
             throw new AlreadyExistsEmailException();
         }
 
+        SCryptPasswordEncoder encoder = new SCryptPasswordEncoder(16, 8, 1, 32, 64);
+        String encodedPassword = encoder.encode(signUp.getPassword());
+
         User user = User.builder()
                 .name(signUp.getName())
-                .password(signUp.getPassword())
+                .password(encodedPassword)
                 .email(signUp.getEmail())
                 .build();
         userRepository.save(user);
