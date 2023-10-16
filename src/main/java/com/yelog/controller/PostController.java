@@ -1,6 +1,5 @@
 package com.yelog.controller;
 
-import com.yelog.config.data.UserSession;
 import com.yelog.domain.Post;
 import com.yelog.exception.InvalidRequest;
 import com.yelog.request.PostCreate;
@@ -26,17 +25,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
-    @GetMapping("/foo")
-    public Long foo(UserSession userSession) {
-        log.info(">>> {}" , userSession.id);
-        return userSession.id;
-    }
-
-    @GetMapping("/bar")
-    public String bar() {
-        return "인증이 필요없는 페이지";
-    }
 
 
     @PostMapping("/posts")
