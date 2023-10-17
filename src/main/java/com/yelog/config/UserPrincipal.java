@@ -1,4 +1,4 @@
-package com.yelog.config.data;
+package com.yelog.config;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +16,7 @@ public class UserPrincipal extends User {
 
     public UserPrincipal(com.yelog.domain.User user) {
         super(user.getEmail(), user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
         this.userId = user.getId();
     }
 
