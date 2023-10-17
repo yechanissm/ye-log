@@ -3,10 +3,20 @@
 POST http://localhost:8080/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=yechan&password=1234
+username=dldpcks34@naver.com&password=1234&remember=1
 
-### 인증페이지 요청
+### 회원가입
 
-GET  http://localhost:8080/foo
+POST http://localhost:8080/auth/signup
 Content-Type: application/json
-Cookie: SESSION=ca8471b5-116d-4996-9984-ab2d4278bb92
+
+{
+  "name" : "이예찬",
+  "email" : "dldpcks34@naver.com",
+  "password" : "1234"
+}
+
+
+### 메인페이지
+
+GET  http://localhost:8080

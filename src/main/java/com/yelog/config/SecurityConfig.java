@@ -1,16 +1,21 @@
 package com.yelog.config;
 
+import com.yelog.config.data.UserPrincipal;
+import com.yelog.domain.User;
+import com.yelog.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -32,7 +37,8 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests()
                     .requestMatchers("/auth/login").permitAll()
-                    .anyRequest().authenticated()
+                    .requestMatchers("/auth/signup").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/auth/login")
@@ -41,25 +47,31 @@ public class SecurityConfig {
                     .passwordParameter("password")
                     .defaultSuccessUrl("/")
                 .and()
-                .userDetailsService(userDetailService())
+                .rememberMe(rm -> rm.rememberMeParameter("remember")
+                        .alwaysRemember(false)
+                        .tokenValiditySeconds(2592000)
+                )
                 .csrf(csrf -> csrf.disable())
                 .build();
     }
 
     @Bean
-    public UserDetailsService userDetailService() {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        UserDetails user = User.withUsername("yechan")
-                                .password("1234")
-                                .roles("ADMIN")
-                                .build();
-        manager.createUser(user);
-        return manager;
+    public UserDetailsService userDetailService(UserRepository userRepository) {
+        return username -> {
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException(username+ "을 찾을 수 없습니다."));
+            return new UserPrincipal(user);
+        };
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new SCryptPasswordEncoder(
+                16,
+                8,
+                1,
+                32,
+                64);
     }
 
 }
