@@ -17,6 +17,15 @@ Content-Type: application/json
 }
 
 
-### 메인페이지
+### 관리자 페이지
+
+GET http://localhost:8080/admin
+
+### 사용자 페이지
+
+GET http://localhost:8080/user
+
+
+###메인페이지
 
 GET  http://localhost:8080

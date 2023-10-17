@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -38,6 +39,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .requestMatchers("/auth/login").permitAll()
                     .requestMatchers("/auth/signup").permitAll()
+                    .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
